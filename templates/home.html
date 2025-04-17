@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - ITUStore{% endblock %}
+
+{% block content %}
+<div class="special-banner">
+    Special Promotion: Up to 50% Off!
+</div>
+
+{% include 'includes/featured_products.html' %}
+{% include 'includes/categories.html' %}
+{% include 'includes/promotions.html' %}
+{% endblock %}

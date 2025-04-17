@@ -1,0 +1,17 @@
+<section class="py-6">
+    <h2 class="text-2xl font-bold mb-4">Featured Products</h2>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for product in featured_products %}
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="{{ product.image_url.url }}" class="card-img-top" alt="{{ product.name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <p class="card-text">${{ product.price }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</section>

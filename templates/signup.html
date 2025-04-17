@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - ITUStore{% endblock %}
+
+{% block content %} 
+  <div class="container py-5">
+    <div class="form-container">
+        <div class="form-title">Create Account</div>
+        <form  id="signup-form" method="POST" action="">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="username" class="form-label">Email</label>
+                <input type="email" class="form-control" id="username" name="username" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone</label>
+                <input type="text" class="form-control" id="phone" name="phone">
+            </div>
+
+            <div class="mb-3">
+                <label for="address" class="form-label">Address</label>
+                <input type="text" class="form-control" id="address" name="address">
+            </div>
+
+            <div class="mb-3">
+                <label for="birthdate" class="form-label">Birthdate</label>
+                <input type="date" class="form-control" id="birthdate" name="birthdate">
+            </div>
+
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="terms" required>
+                <label class="form-check-label" for="terms">
+                    I agree to the <a href="#">Terms</a> and <a href="#">Privacy Policy</a>
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-dark">Create Account</button>
+        </form>
+    </div>
+</div>
+  
+  <script>
+    document.getElementById("signup-form").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const form = e.target;
+
+      const payload = {
+        username: form.email.value,
+        password: form.password.value,
+        phone: form.phone.value,
+        address: form.address.value,
+        loyalty_points: 0,
+        birthdate: form.birthdate.value || null
+      };
+
+      const response = await fetch("http://localhost:8000/account/signup/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Account created!");
+        localStorage.setItem("authToken", data.token);
+        // Redirect or update UI
+      } else {
+        alert("Error: " + JSON.stringify(data));
+      }
+    });
+  </script>
+  {% endblock %}

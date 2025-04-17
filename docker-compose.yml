@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+  # MongoDB service
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - ecommerce-net
+
+  # Elasticsearch service
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.1
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+    networks:
+      - ecommerce-net
+
+  # Django app
+  django:
+    build: .
+    container_name: django-app
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      - mongo
+      - elasticsearch
+    networks:
+      - ecommerce-net
+
+networks:
+  ecommerce-net:
+    driver: bridge

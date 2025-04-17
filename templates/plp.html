@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Product Listing - ITUStore{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Filter Sidebar -->
+    <div class="col-md-3 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white fw-bold">
+                Filter Products
+            </div>
+            <div class="card-body">
+                <!-- Category Filter -->
+                <div class="mb-3">
+                    <label class="form-label">Category</label>
+                    <select class="form-select">
+                        <option selected>All</option>
+                        <option>Electronics</option>
+                        <option>Clothing</option>
+                        <option>Books</option>
+                    </select>
+                </div>
+
+                <!-- Price Range -->
+                <div class="mb-3">
+                    <label class="form-label">Price Range</label>
+                    <input type="range" class="form-range" min="0" max="1000">
+                </div>
+
+                <!-- Sort -->
+                <div class="mb-3">
+                    <label class="form-label">Sort By</label>
+                    <select class="form-select">
+                        <option selected>Relevance</option>
+                        <option>Price: Low to High</option>
+                        <option>Price: High to Low</option>
+                        <option>Newest</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-dark w-100">Apply Filters</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Listing -->
+    <div class="col-md-9">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for product in products %}
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="{{ product.image_url.url }}" class="card-img-top" alt="{{ product.name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <p class="card-text">${{ product.price }}</p>
+                        <a href="{% url 'product_detail' product.id %}" class="btn btn-dark btn-sm">View</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted">No products found.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
