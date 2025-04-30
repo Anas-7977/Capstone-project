@@ -6,7 +6,7 @@
   <div class="container py-5">
     <div class="form-container">
         <div class="form-title">Create Account</div>
-        <form  id="signup-form" method="POST" action="">
+        <form  id="signup-form" method="POST" action="{% url 'customer-signup' %}">
             {% csrf_token %}
 
             <div class="mb-3">
@@ -46,7 +46,7 @@
     </div>
 </div>
   
-  <script>
+  <!-- <script>
     document.getElementById("signup-form").addEventListener("submit", async function(e) {
       e.preventDefault();
 
@@ -77,5 +77,5 @@
         alert("Error: " + JSON.stringify(data));
       }
     });
-  </script>
+  </script> -->
   {% endblock %}

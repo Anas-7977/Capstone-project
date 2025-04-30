@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'store',
     'customer',
+    'bulk',
 ]
 # AUTH_USER_MODEL = 'customer.CustomUser'
 MIDDLEWARE = [
@@ -52,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'custom_middleware.middleware.ProductListMiddleware',
 ]
 
 ROOT_URLCONF = 'ecommerce_project.urls'
@@ -100,9 +102,13 @@ DATABASES = {
 #     }
 # }
 
+# REST_FRAMEWORK = {
+#     'DEFAULT_PAGINATION_CLASS': ['rest_framework.pagination.PageNumberPagination',
+#                                  'rest_framework.authentication.TokenAuthentication',],
+#     'PAGE_SIZE': 10,
+# }
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': ['rest_framework.pagination.PageNumberPagination',
-                                 'rest_framework.authentication.TokenAuthentication',],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',  # Fix here
     'PAGE_SIZE': 10,
 }
 
@@ -156,3 +162,5 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+LOCAL_FILE_PATH = 'D:\Project\ecommerce_project'

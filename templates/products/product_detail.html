@@ -23,7 +23,7 @@
             <h2 class="fw-bold">{{ product.name }}</h2>
             <p class="text-muted">{{ product.description }}</p>
             <h4 class="fw-bold text-dark">${{ product.price }}</h4>
-            <button class="btn btn-dark mt-3">Add to Cart</button>
+            <button class="btn btn-dark btn-sm mt-2 btn-add-to-cart" data-product-id="{{ product.id }}">Add to Cart</button>
         </div>
     </div>
 
@@ -37,6 +37,8 @@
                     <div class="card-body">
                         <h6 class="card-title">{{ related.name }}</h6>
                         <p class="text-muted">${{ related.price }}</p>
+                        <a href="{% url 'product_detail' related.id %}" class="btn btn-dark btn-sm">View</a>
+                        <button class="btn btn-dark btn-sm mt-2 btn-add-to-cart" data-product-id="{{ related.id }}">Add to Cart</button>
                     </div>
                 </div>
             </div>
@@ -44,3 +46,36 @@
     </div>
 </div>
 {% endblock %}
+{% block script %}
+<script>
+        document.querySelectorAll('.btn-add-to-cart').forEach(button => {
+            button.addEventListener('click', function () {
+                const productId = this.dataset.productId;
+                fetch("{% url 'cart_items_api' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}',
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        quantity: 1
+                    })
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error("Failed to add item to cart");
+                    return res.json();
+                })
+                .then(data => {
+                    alert("Added to cart!");
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Something went wrong. Try again.");
+                });
+            });
+        });
+
+</script>
+{% endblock %}
+

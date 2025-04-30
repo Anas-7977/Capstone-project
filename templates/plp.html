@@ -13,47 +13,54 @@
                 <!-- Category Filter -->
                 <div class="mb-3">
                     <label class="form-label">Category</label>
-                    <select class="form-select">
-                        <option selected>All</option>
-                        <option>Electronics</option>
-                        <option>Clothing</option>
-                        <option>Books</option>
+                    <select class="form-select" id="categoryFilter">
+                        <option value="">All</option>
+                        {% for bucket in facets.category.buckets %}
+                            <option value="{{ bucket.key }}" {% if filters.category == bucket.key %}selected{% endif %}>{{ bucket.key }}</option>
+                        {% endfor %}
                     </select>
                 </div>
 
                 <!-- Price Range -->
                 <div class="mb-3">
                     <label class="form-label">Price Range</label>
-                    <input type="range" class="form-range" min="0" max="1000">
+                    <input type="range" class="form-range" id="priceRange" min="0" max="200000" value="{{ filters.price|default:200000 }}">
+                    <span id="priceRangeValue">0 - {{ filters.price|default:"200000" }}</span>
                 </div>
 
                 <!-- Sort -->
                 <div class="mb-3">
                     <label class="form-label">Sort By</label>
-                    <select class="form-select">
-                        <option selected>Relevance</option>
-                        <option>Price: Low to High</option>
-                        <option>Price: High to Low</option>
-                        <option>Newest</option>
+                    <select class="form-select" id="sortBy">
+                        <option value="">Relevance</option>
+                        <option value="price_asc" {% if request.GET.sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="price_desc" {% if request.GET.sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                        <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>Newest</option>
                     </select>
                 </div>
 
-                <button class="btn btn-dark w-100">Apply Filters</button>
+                <button class="btn btn-dark w-100" id="applyFiltersBtn">Apply Filters</button>
             </div>
         </div>
     </div>
 
     <!-- Product Listing -->
     <div class="col-md-9">
-        <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="row row-cols-1 row-cols-md-3 g-4" id="productListing">
             {% for product in products %}
             <div class="col">
                 <div class="card h-100 shadow-sm">
-                    <img src="{{ product.image_url.url }}" class="card-img-top" alt="{{ product.name }}">
+                    {% if product.image_url %}  
+                    <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}">
+                    {% else %}
+                    <img src="/media/download (1).jpg" class="card-img-top" alt="{{ product.name }}">
+                    {% endif %}
+
                     <div class="card-body">
                         <h5 class="card-title">{{ product.name }}</h5>
                         <p class="card-text">${{ product.price }}</p>
                         <a href="{% url 'product_detail' product.id %}" class="btn btn-dark btn-sm">View</a>
+                        <button class="btn btn-dark btn-sm mt-2 btn-add-to-cart" data-product-id="{{ product.id }}">Add to Cart</button>
                     </div>
                 </div>
             </div>
@@ -61,6 +68,107 @@
             <p class="text-muted">No products found.</p>
             {% endfor %}
         </div>
+
+        <!-- Pagination Controls -->
+        <!-- Tailwind-based Pagination Controls -->
+<div class="container mx-auto px-4 mt-4">
+    <nav class="flex flex-row flex-nowrap justify-between md:justify-center items-center" aria-label="Pagination">
+      {% if current_page > 1 %}
+      <a class="flex w-10 h-10 mr-1 justify-center items-center rounded-full border border-gray-200 bg-white text-black hover:border-gray-300" href="?page={{ current_page|add:'-1' }}&{{ request.GET.urlencode|safe }}" title="Previous Page">
+          <span class="sr-only">Previous Page</span>
+          <svg class="block w-4 h-4 fill-current" viewBox="0 0 256 512" aria-hidden="true" role="presentation">
+              <path d="M238.475 475.535l7.071-7.07c4.686-4.686 4.686-12.284 0-16.971L50.053 256 245.546 60.506c4.686-4.686 4.686-12.284 0-16.971l-7.071-7.07c-4.686-4.686-12.284-4.686-16.97 0L10.454 247.515c-4.686 4.686-4.686 12.284 0 16.971l211.051 211.05c4.686 4.686 12.284 4.686 16.97-.001z"></path>
+          </svg>
+      </a>
+      {% endif %}
+  
+      {% for num in total_pages|make_list %}
+        {% if num|stringformat:"i" == current_page|stringformat:"i" %}
+          <a class="hidden md:flex w-10 h-10 mx-1 justify-center items-center rounded-full border border-black bg-black text-white pointer-events-none" href="#" aria-current="page" title="Page {{ num }}">{{ num }}</a>
+        {% else %}
+          <a class="hidden md:flex w-10 h-10 mx-1 justify-center items-center rounded-full border border-gray-200 bg-white text-black hover:border-gray-300" href="?page={{ num }}&{{ request.GET.urlencode|safe }}" title="Page {{ num }}">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+  
+      {% if current_page < total_pages %}
+      <a class="flex w-10 h-10 ml-1 justify-center items-center rounded-full border border-gray-200 bg-white text-black hover:border-gray-300" href="?page={{ current_page|add:'1' }}&{{ request.GET.urlencode|safe }}" title="Next Page">
+          <span class="sr-only">Next Page</span>
+          <svg class="block w-4 h-4 fill-current" viewBox="0 0 256 512" aria-hidden="true" role="presentation">
+              <path d="M17.525 36.465l-7.071 7.07c-4.686 4.686-4.686 12.284 0 16.971L205.947 256 10.454 451.494c-4.686 4.686-4.686 12.284 0 16.971l7.071 7.07c4.686 4.686 12.284 4.686 16.97 0l211.051-211.05c4.686-4.686 4.686-12.284 0-16.971L34.495 36.465c-4.686-4.687-12.284-4.687-16.97 0z"></path>
+          </svg>
+      </a>
+      {% endif %}
+    </nav>
+  </div>
     </div>
 </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const categorySelect = document.getElementById('categoryFilter');
+        const priceRange = document.getElementById('priceRange');
+        const priceRangeValue = document.getElementById('priceRangeValue');
+        const sortBy = document.getElementById('sortBy');
+
+        priceRange.addEventListener('input', function () {
+            priceRangeValue.textContent = `0 - ${priceRange.value}`;
+        });
+
+        document.getElementById('applyFiltersBtn').addEventListener('click', function () {
+            const selectedCategory = categorySelect.value;
+            const selectedPrice = priceRange.value;
+            const selectedSort = sortBy.value;
+
+            let queryParams = new URLSearchParams(window.location.search);
+
+            if (selectedCategory && selectedCategory !== 'all') {
+                queryParams.set('category', selectedCategory);
+            } else {
+                queryParams.delete('category');
+            }
+
+            if (selectedPrice) {
+                queryParams.set('price', selectedPrice);
+            }
+
+            if (selectedSort) {
+                queryParams.set('sort', selectedSort);
+            }
+
+            queryParams.delete('page');  // reset to first page
+
+            window.location.search = queryParams.toString();
+        });
+
+        document.querySelectorAll('.btn-add-to-cart').forEach(button => {
+            button.addEventListener('click', function () {
+                const productId = this.dataset.productId;
+                fetch("{% url 'cart_items_api' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}',
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        quantity: 1
+                    })
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error("Failed to add item to cart");
+                    return res.json();
+                })
+                .then(data => {
+                    alert("Added to cart!");
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Something went wrong. Try again.");
+                });
+            });
+        });
+    });
+</script>
 {% endblock %}

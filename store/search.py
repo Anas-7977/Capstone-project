@@ -7,4 +7,4 @@ class ProductDocument(Document):
     price = Keyword()
 
     class Index:
-        name = 'products'
+        name = 'product'

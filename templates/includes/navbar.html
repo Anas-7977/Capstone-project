@@ -9,10 +9,10 @@
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Shop</a>
+                    <a class="nav-link" href="{% url 'semantic_search' %}">Shop</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Categories</a>
@@ -23,9 +23,29 @@
             </ul>
 
             <div class="d-flex align-items-center">
-                <a href="#" class="btn btn-outline-secondary me-2"><i class="bi bi-search"></i></a>
-                <a href="#" class="btn btn-outline-secondary"><i class="bi bi-cart"></i></a>
+                {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'customer-logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger me-2">Logout</button>
+                    </form>
+                    <span class="me-2">Hi, {{ user.username }}</span>
+                {% else %}
+                    <a href="{% url 'customer-login' %}" class="btn btn-outline-primary me-2">Login</a>
+                {% endif %}
+                <div class="spectacledcoder-search-bar">
+                    <img class="search-icon" width="30" height="30"
+                         src="https://img.icons8.com/sf-black/500/000000/search.png" alt="search"/>
+                    <form id="search-form" method="get" action="{% url 'semantic_search' %}" style="width: 100%;">
+                        <input type="text" id="search-input" name="q" placeholder="Search ITUStore or type a URL"
+                               class="spectacledcoder-search-input" autocomplete="off" />
+                        <div id="autocomplete-results" class="autocomplete-dropdown"></div>
+                    </form>
+                </div>
+                <a href="{% url 'cart-page' %}" class="btn btn-outline-secondary"><i class="bi bi-cart"></i></a>
             </div>
         </div>
     </div>
 </nav>
+
+
+    
